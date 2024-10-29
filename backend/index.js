@@ -62,6 +62,36 @@ app.post("/books", async (req, res) => {
   }
 });
 
+// route for update a book in only specific part
+app.patch("/books/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const result = await Book.findByIdAndUpdate(id, req.body);
+    if (!result) {
+      return res.status(404).json({ meesage: "Book not found" });
+    }
+    return res.status(200).send({ message: "Book update succesfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ meesage: error.message });
+  }
+});
+
+//  Route for deleting book
+app.delete("/books/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const result = await Book.findByIdAndDelete(id);
+    if (!result) {
+      return res.status(404).json({ meesage: "Book not found" });
+    }
+    return res.status(200).send({ message: "Book Deleted succesfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ meesage: error.message });
+  }
+});
+
 // connect database using mongoose
 mongoose
   .connect(mongoDBURL)
