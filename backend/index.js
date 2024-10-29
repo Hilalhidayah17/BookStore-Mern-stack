@@ -25,6 +25,19 @@ app.get("/books", async (req, res) => {
   }
 });
 
+// find book by ID
+app.get("/books/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const book = await Book.findById(id);
+    return res.status(200).json(book);
+  } catch (error) {
+    console.error();
+    res.status(500).send({ message: error.message });
+  }
+});
+
 // Route for save/create a new book using POST
 app.post("/books", async (req, res) => {
   try {
