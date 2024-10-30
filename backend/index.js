@@ -3,6 +3,7 @@ import { PORT, mongoDBURL } from "./config.js";
 import mongoose from "mongoose";
 import { Book } from "./models/bookModel.js";
 import bodyParser from "body-parser";
+import booksRoute from "./routes/booksRoute.js";
 
 const app = e();
 
@@ -10,88 +11,8 @@ const app = e();
 
 app.use(bodyParser.json());
 app.get("/", (req, res) => {});
-
-// Route for get All books from database
-app.get("/books", async (req, res) => {
-  try {
-    const books = await Book.find({});
-    return res.status(200).json({
-      count: books.length,
-      data: books,
-    });
-  } catch (error) {
-    console.error();
-    res.status(500).send({ message: error.message });
-  }
-});
-
-// find book by ID
-app.get("/books/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-
-    const book = await Book.findById(id);
-    return res.status(200).json(book);
-  } catch (error) {
-    console.error();
-    res.status(500).send({ message: error.message });
-  }
-});
-
-// Route for save/create a new book using POST
-app.post("/books", async (req, res) => {
-  try {
-    // verify if title,author,and publishYear field is exist. If not response by send status code 400
-    if (!req.body.title || !req.body.author || !req.body.publishYear) {
-      return res.status(400).send({
-        message: "Send all required fields : title,author,publishYear",
-      });
-    }
-    // if all those field exist, create new object that has property of title,author, and publishYear which set to coresponding value in req.body
-    const newBook = {
-      title: req.body.title,
-      author: req.body.author,
-      publishYear: req.body.publishYear,
-    };
-    // insert newBook object to Book collection in database using create
-    const book = await Book.create(newBook);
-    return res.status(201).send(book);
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({ message: error.message });
-  }
-});
-
-// route for update a book in only specific part
-app.patch("/books/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const result = await Book.findByIdAndUpdate(id, req.body);
-    if (!result) {
-      return res.status(404).json({ meesage: "Book not found" });
-    }
-    return res.status(200).send({ message: "Book update succesfully" });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({ meesage: error.message });
-  }
-});
-
-//  Route for deleting book
-app.delete("/books/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const result = await Book.findByIdAndDelete(id);
-    if (!result) {
-      return res.status(404).json({ meesage: "Book not found" });
-    }
-    return res.status(200).send({ message: "Book Deleted succesfully" });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({ meesage: error.message });
-  }
-});
-
+// use booksRoute as middleware
+app.use("/books", booksRoute);
 // connect database using mongoose
 mongoose
   .connect(mongoDBURL)
