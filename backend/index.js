@@ -4,15 +4,18 @@ import mongoose from "mongoose";
 import { Book } from "./models/bookModel.js";
 import bodyParser from "body-parser";
 import booksRoute from "./routes/booksRoute.js";
+import cors from "cors";
 
 const app = e();
 
 // use middleware bodyparser
-
 app.use(bodyParser.json());
 app.get("/", (req, res) => {});
 // use booksRoute as middleware
 app.use("/books", booksRoute);
+// use cors as middleware
+app.use(cors());
+
 // connect database using mongoose
 mongoose
   .connect(mongoDBURL)
