@@ -5,15 +5,16 @@ import BackButton from "../components/BackButton"; // Button to navigate back
 import Spinner from "../components/Spinner"; // Spinner to show loading state
 import axios from "axios"; // Library for making HTTP requests
 import { useNavigate } from "react-router-dom"; // Hook for navigation
+import { useSnackbar } from "notistack";
 
 // Component for creating a new book entry
 export default function CreateBook() {
   // State variables to hold the values for title, author, publish year, and loading state
-  const [title, setTitle] = useState(""); // Book title
-  const [author, setAuthor] = useState(""); // Book author
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
   const [publishYear, setPublishYear] = useState(""); // Year of publication
   const [loading, setLoading] = useState(false); // Loading indicator for saving data
-
+  const { enqueueSnackbar } = useSnackbar();
   // useNavigate hook to redirect to a different page after saving the book
   const navigate = useNavigate();
 
@@ -26,21 +27,21 @@ export default function CreateBook() {
       publishYear,
     };
 
-    // Set loading to true while the request is in progress
     setLoading(true);
-
     // Send a POST request to the server to save the new book data
     axios
       .post("http://localhost:3000/books", data)
       .then(() => {
         // If the request is successful, stop loading and navigate back to the homepage
         setLoading(false);
+        enqueueSnackbar("Book Created Successfully", { variant: "success" });
         navigate("/");
       })
       .catch((err) => {
         // If there is an error, stop loading, show an error message, and log the error
         setLoading(false);
-        alert("Error. Please try again");
+        // alert("Error. Please try again");
+        enqueueSnackbar("error", { variant: "error" });
         console.log(err);
       });
   };

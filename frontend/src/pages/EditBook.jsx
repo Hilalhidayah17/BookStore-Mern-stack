@@ -5,6 +5,7 @@ import BackButton from "../components/BackButton"; // Button to navigate back
 import Spinner from "../components/Spinner"; // Spinner to show loading state
 import axios from "axios"; // Library for making HTTP requests
 import { useNavigate, useParams } from "react-router-dom"; // Hook for navigation
+import { useSnackbar } from "notistack";
 
 // Component for creating a new book entry
 export default function EditBook() {
@@ -14,19 +15,22 @@ export default function EditBook() {
   const [publishYear, setPublishYear] = useState(""); // Year of publication
   const [loading, setLoading] = useState(false); // Loading indicator for saving data
   const { id } = useParams();
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     setLoading(true);
     axios
       .get(`http://localhost:3000/books/${id}`)
       .then((res) => {
+        setLoading(false);
+        enqueueSnackbar("Book Created Successfully", { variant: "success" });
         setAuthor(res.data.author);
         setPublishYear(res.data.publishYear);
         setTitle(res.data.title);
-        setLoading(false);
       })
       .catch((err) => {
         setLoading(false);
+        enqueueSnackbar("error", { variant: "error" });
         console.log(err);
       });
   }, []);
